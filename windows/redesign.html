@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T3 Code, IRIS muted</title>
+<style>
+@font-face{font-family:'Selawik';font-style:normal;font-weight:400;font-display:swap;src:url(../fonts/selawik-regular.woff2) format('woff2')}
+@font-face{font-family:'Selawik';font-style:normal;font-weight:600;font-display:swap;src:url(../fonts/selawik-semibold.woff2) format('woff2')}
+@font-face{font-family:'Selawik';font-style:normal;font-weight:700;font-display:swap;src:url(../fonts/selawik-bold.woff2) format('woff2')}
+body{margin:0;background:#090909;-webkit-font-smoothing:antialiased}
+a{color:#9cc6d2}a:hover{color:#c3dde4}
+.t3{--say:var(--fg-2);--tool-cmd:#cbba48;--tool-read:#48becb;--tool-edit:#cb6648;--tool-mixed:#7d48cb;--sel:#1d1a26;--sel-line:#2b2638;--bg-0:#090909;--bg-1:#0d0d0d;--bg-2:#111111;--bg-3:#161616;--bg-4:#1c1c1c;--bg-5:#232323;--line-1:#202020;--line-2:#2e2e2e;--fg-1:#ececec;--fg-2:#c8c8c8;--fg-3:#a0a0a0;--fg-4:#858585;--ok:#48cb74;--ok-bg:rgba(72,203,116,.12);--ok-line:rgba(72,203,116,.35);--warn:#cb9948;--warn-bg:rgba(203,153,72,.12);--warn-line:rgba(203,153,72,.35);--err:#cb4863;--err-bg:rgba(203,72,99,.12);--err-line:rgba(203,72,99,.35)}
+.t3.accent-cyan{--accent:#4867cc;--accent-bg:rgba(72,103,204,.13);--accent-line:rgba(72,103,204,.4)}
+.t3.accent-blue{--accent:#4877cb;--accent-bg:rgba(72,119,203,.13);--accent-line:rgba(72,119,203,.4)}
+.t3.accent-neon{--accent:#00d4ff;--accent-bg:rgba(0,212,255,.13);--accent-line:rgba(0,212,255,.4)}
+.t3 *{box-sizing:border-box}
+.t3 svg{display:block;flex:0 0 auto}
+.t3 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:0;margin:0;white-space:nowrap}
+.t3 code,.t3 input,.t3 textarea{font-family:inherit}
+.t3 .row:hover{background:var(--bg-4)}
+.t3 .row.on,.t3 .row.on:hover{background-color:var(--sel)!important;background-image:none!important;box-shadow:inset 0 0 0 1px var(--sel-line)}
+.t3 .ibtn:hover{background:var(--bg-4);color:var(--fg-1)}
+.t3 .menu-item:hover{background:var(--bg-4);color:var(--fg-1)}
+.t3 .code{font-size:13px;color:var(--fg-1);background:var(--bg-4);border:1px solid var(--line-2);padding:0 5px;white-space:nowrap}
+.t3 textarea{font:inherit;color:var(--fg-1);background:transparent;border:0;outline:none;resize:none;width:100%}
+.t3 textarea::placeholder{color:var(--fg-4)}
+.t3 :focus-visible{outline:1px solid var(--accent);outline-offset:-1px}
+.t3 .qrow:hover{background:var(--bg-4)}
+.t3 .var{color:var(--accent);background:var(--accent-bg);border:1px solid var(--accent-line);padding:0 4px;white-space:nowrap}
+.t3 .ref{color:var(--fg-1);background:var(--bg-4);border:1px solid var(--line-2);padding:0 4px;white-space:nowrap}
+.t3 .acct-work{color:#cb8148!important;background:transparent!important;border-color:transparent!important}
+.t3 .acct-personal{color:#4895cb!important;background:transparent!important;border-color:transparent!important}
+.t3 .acct-grok{color:#cb4885!important;background:transparent!important;border-color:transparent!important}
+.t3 .acct-codex{color:#a3cb48!important;background:transparent!important;border-color:transparent!important}
+@keyframes t3spin{to{transform:rotate(360deg)}}
+@keyframes t3in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes t3dot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@keyframes t3shimmer{from{background-position:120% 0}to{background-position:-20% 0}}
+@keyframes t3pulse{0%{box-shadow:0 0 0 0 rgba(203,72,99,.45)}70%{box-shadow:0 0 0 7px rgba(203,72,99,0)}100%{box-shadow:0 0 0 0 rgba(203,72,99,0)}}
+@keyframes t3caret{50%{opacity:0}}
+.t3 .spin{animation:t3spin 1.1s linear infinite;transform-origin:50% 50%}
+.t3 .appear{animation:t3in .4s ease-out both}
+.t3 .dots>span{animation:t3dot 1.2s ease-in-out infinite}
+.t3 .dots>span:nth-child(2){animation-delay:.15s}
+.t3 .dots>span:nth-child(3){animation-delay:.3s}
+.t3 .shimmer{background:linear-gradient(90deg,var(--fg-3) 0%,var(--fg-3) 40%,var(--fg-1) 50%,var(--fg-3) 60%,var(--fg-3) 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:t3shimmer 1.8s linear infinite}
+.t3 .pulse{animation:t3pulse 1.6s ease-out infinite}
+.t3 .caret{animation:t3caret 1s steps(1) infinite}
+@media (prefers-reduced-motion: reduce){.t3 .spin,.t3 .appear,.t3 .dots>span,.t3 .shimmer,.t3 .pulse,.t3 .caret{animation:none}.t3 .shimmer{color:var(--fg-2);background:none}}
+.t3 .cleanup:hover{background:var(--ok)!important;color:var(--bg-0)!important}
+.t3 .scroll{scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+</style>
+
+</head>
+<body>
+<div class="t3 accent-cyan" style="width: 100%; height: 100vh; min-height: 640px; display: flex; flex-direction: column; background: var(--bg-2); color: var(--fg-2); font-family: 'Segoe UI', Selawik, system-ui, sans-serif; font-size: 14px; line-height: 1.5; position: relative; overflow: hidden;">
+
+  <header style="height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 0 0 12px; background: var(--bg-0); border-bottom: 1px solid var(--line-1);">
+    <button class="ibtn" aria-label="Toggle sidebar" style="width: 26px; height: 26px; display: grid; place-items: center; color: var(--fg-3);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path></svg>
+    </button>
+    <span style="font-weight: 600; color: var(--fg-1); font-size: 13px;">T3 Code</span>
+    <span style="font-size: 11px; color: var(--fg-3); border: 1px solid var(--line-2); padding: 0 6px; line-height: 18px;">Nightly</span>
+    <span style="flex: 1 1 auto;"></span>
+    <div style="display: flex; align-items: center; color: var(--fg-3);">
+      <button class="ibtn" aria-label="Transcript view" style="width: 30px; height: 26px; display: grid; place-items: center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12h-5"></path><path d="M15 8h-5"></path><path d="M19 17V5a2 2 0 0 0-2-2H4"></path><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"></path></svg></button>
+      <button class="ibtn" aria-label="Bottom panel" style="width: 30px; height: 26px; display: grid; place-items: center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 15h18"></path></svg></button>
+      <button class="ibtn" aria-label="Side panel" style="width: 30px; height: 26px; display: grid; place-items: center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M15 3v18"></path></svg></button>
+      <span style="width: 1px; height: 16px; background: var(--line-1); margin: 0 6px;"></span>
+      <button class="ibtn" aria-label="Minimize" style="width: 44px; height: 34px; display: grid; place-items: center;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M1 6h10"></path></svg></button>
+      <button class="ibtn" aria-label="Maximize" style="width: 44px; height: 34px; display: grid; place-items: center;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><rect x="1.5" y="1.5" width="9" height="9"></rect></svg></button>
+      <button class="ibtn" aria-label="Close" style="width: 44px; height: 34px; display: grid; place-items: center;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M1.5 1.5l9 9M10.5 1.5l-9 9"></path></svg></button>
+    </div>
+  </header>
+
+  <div style="flex: 1 1 auto; display: flex; flex-wrap: wrap; min-height: 0;">
+
+    <aside style="flex: 1 1 360px; max-width: 380px; min-width: 0; min-height: 0; max-height: 100%; background: var(--bg-1); border-right: 1px solid var(--line-1); display: flex; flex-direction: column;">
+      <div style="padding: 10px 10px 8px; display: flex; align-items: center; gap: 4px;">
+        <button class="ibtn" style="flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 8px; color: var(--fg-3); font-size: 13px; text-align: left;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+          Search
+        </button>
+        <button class="ibtn" aria-label="Filter" style="flex: 0 0 auto; width: 30px; height: 30px; display: grid; place-items: center; color: var(--fg-3);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h20"></path><path d="M6 12h12"></path><path d="M9 19h6"></path></svg></button>
+        <button class="ibtn" aria-label="New project" style="flex: 0 0 auto; width: 30px; height: 30px; display: grid; place-items: center; color: var(--fg-3);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10v6"></path><path d="M9 13h6"></path><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg></button>
+        <button class="ibtn" aria-label="New thread" style="flex: 0 0 auto; width: 30px; height: 30px; display: grid; place-items: center; color: var(--accent);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></svg></button>
+      </div>
+
+      <div class="scroll" style="flex: 1 1 auto; overflow-y: auto; padding: 0 6px 8px; display: flex; flex-direction: column; gap: 1px;">
+        
+          <button class="row " style="width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; text-align: left; white-space: normal; background-image: linear-gradient(to right, rgba(157,171,87,0.09), rgba(157,171,87,0.02) 70%, rgba(157,171,87,0));">
+            <span style="flex: 0 0 22px; display: flex; padding-top: 1px;">
+              
+              <span title="No project" style="display: block; width: 22px; height: 22px; border: 1px dashed var(--line-2);"></span>
+            </span>
+            <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px;">
+              <span style="display: flex; align-items: flex-start; gap: 10px;">
+                <span style="flex: 1 1 auto; min-width: 0; font-size: 13.5px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--fg-2); font-weight: 400;">Compare muted palettes for desktop</span>
+                <span style="flex: 0 0 auto; padding-top: 1px;">
+                  
+                <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-3);">
+                  
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="Pinned" role="img" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg>
+                  
+                  20m
+                </span>
+              
+                  
+                  
+                </span>
+              </span>
+              
+            </span>
+          </button>
+          
+        
+          <button class="row " style="width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; text-align: left; white-space: normal; background-image: linear-gradient(to right, rgba(72,203,116,0.09), rgba(72,203,116,0.02) 70%, rgba(72,203,116,0));">
+            <span style="flex: 0 0 22px; display: flex; padding-top: 1px;">
+              
+              <span title="No project" style="display: block; width: 22px; height: 22px; border: 1px dashed var(--line-2);"></span>
+            </span>
+            <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px;">
+              <span style="display: flex; align-items: flex-start; gap: 10px;">
+                <span style="flex: 1 1 auto; min-width: 0; font-size: 13.5px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--fg-2); font-weight: 400;">Audit color contrast in the dark theme</span>
+                <span style="flex: 0 0 auto; padding-top: 1px;">
+                  
+                  
+                <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--ok);">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+                  Done
+                </span>
+              
+                  
+                </span>
+              </span>
+              
+            </span>
+          </button>
+          
+        
+          <button class="row on" style="width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; text-align: left; white-space: normal; background-image: linear-gradient(to right, rgba(108,189,104,0.09), rgba(108,189,104,0.02) 70%, rgba(108,189,104,0));">
+            <span style="flex: 0 0 22px; display: flex; padding-top: 1px;">
+              
+                <span title="t3code" style="flex: 0 0 auto; width: 22px; height: 22px; display: grid; place-items: center; color: #7248cb; background: rgba(114,72,203,0.14); border: 1px solid rgba(114,72,203,0.4); font-size: 10px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">T3</span>
+              
+              
+            </span>
+            <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px;">
+              <span style="display: flex; align-items: flex-start; gap: 10px;">
+                <span style="flex: 1 1 auto; min-width: 0; font-size: 13.5px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--fg-1); font-weight: 600;">Redesign the desktop shell in muted tones</span>
+                <span style="flex: 0 0 auto; padding-top: 1px;">
+                  
+                  
+                  
+                <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--accent);">
+                  <svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+                  Working 1m
+                </span>
+              
+                </span>
+              </span>
+              
+                <span style="display: flex; align-items: center; gap: 10px; min-height: 16px;">
+                  <span style="flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-3);">
+                    
+                      <span style="flex: 0 1 auto; min-width: 0; display: flex; align-items: center; gap: 5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="flex: 0 0 auto;" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6a9 9 0 0 0-9 9V3"></path><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle></svg><span style="min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">feat/muted-desktop-theme</span></span>
+                    
+                    
+                  <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 4px; color: var(--ok);">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" x2="6" y1="9" y2="21"></line></svg>
+                    412
+                  </span>
+                
+                    
+                  </span>
+                  
+                  <span class="acct-work" title="Claude · Work" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; font-size: 9px; font-weight: 700; line-height: 1; color: var(--fg-3); border: 1px solid var(--line-2);"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg></span>
+                
+                </span>
+              
+            </span>
+          </button>
+          
+            <div style="display: flex; flex-direction: column; gap: 1px; margin: 0 0 8px 22px; padding-left: 4px; border-left: 1px solid var(--line-2);">
+              
+                <button class="row" style="width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; text-align: left; min-width: 0; white-space: normal;">
+                  <span title="acme-api" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; color: #708ca4; background: rgba(112,140,164,0.14); border: 1px solid rgba(112,140,164,0.4); font-size: 9px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">AC</span>
+                  <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column;">
+                    <span style="font-size: 13px; line-height: 1.35; color: var(--fg-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">Move to muted theme tokens</span>
+                    <span style="font-size: 11.5px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">New thread · <span style="color: #4895cb;">Opus 5.5</span></span>
+                  </span>
+                  <span style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-top: 1px;">
+                  <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--accent);"><svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>4m</span>
+                  
+                  
+                  
+                  <span class="acct-personal" title="Claude · Personal" aria-hidden="true" style="flex: 0 0 auto; width: 15px; height: 15px; display: grid; place-items: center; border: 1px solid var(--line-2); font-size: 9px; font-weight: 700; line-height: 1;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg></span>
+                  </span>
+                </button>
+              
+                <button class="row" style="width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; text-align: left; min-width: 0; white-space: normal;">
+                  <span title="docs-site" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; color: #48cba9; background: rgba(72,203,169,0.14); border: 1px solid rgba(72,203,169,0.4); font-size: 9px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">DO</span>
+                  <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column;">
+                    <span style="font-size: 13px; line-height: 1.35; color: var(--fg-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">Move to muted theme tokens</span>
+                    <span style="font-size: 11.5px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">New thread · <span style="color: #cb8148;">Sonnet 5.5</span></span>
+                  </span>
+                  <span style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-top: 1px;">
+                  
+                  
+                  <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--ok);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" x2="6" y1="9" y2="21"></line></svg>87</span>
+                  
+                  <span class="acct-work" title="Claude · Work" aria-hidden="true" style="flex: 0 0 auto; width: 15px; height: 15px; display: grid; place-items: center; border: 1px solid var(--line-2); font-size: 9px; font-weight: 700; line-height: 1;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg></span>
+                  </span>
+                </button>
+              
+                <button class="row" style="width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; text-align: left; min-width: 0; white-space: normal;">
+                  <span title="t3code" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; color: #7248cb; background: rgba(114,72,203,0.14); border: 1px solid rgba(114,72,203,0.4); font-size: 9px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">T3</span>
+                  <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column;">
+                    <span style="font-size: 13px; line-height: 1.35; color: var(--fg-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">Fork: same task on Haiku 5.5</span>
+                    <span style="font-size: 11.5px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Fork · <span style="color: #cb8148;">Haiku 5.5</span></span>
+                  </span>
+                  <span style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-top: 1px;">
+                  
+                  <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--warn);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>Waiting</span>
+                  
+                  
+                  <span class="acct-work" title="Claude · Work" aria-hidden="true" style="flex: 0 0 auto; width: 15px; height: 15px; display: grid; place-items: center; border: 1px solid var(--line-2); font-size: 9px; font-weight: 700; line-height: 1;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg></span>
+                  </span>
+                </button>
+              
+            </div>
+          
+        
+          <button class="row " style="width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; text-align: left; white-space: normal; background-image: linear-gradient(to right, rgba(184,160,78,0.09), rgba(184,160,78,0.02) 70%, rgba(184,160,78,0));">
+            <span style="flex: 0 0 22px; display: flex; padding-top: 1px;">
+              
+              <span title="No project" style="display: block; width: 22px; height: 22px; border: 1px dashed var(--line-2);"></span>
+            </span>
+            <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px;">
+              <span style="display: flex; align-items: flex-start; gap: 10px;">
+                <span style="flex: 1 1 auto; min-width: 0; font-size: 13.5px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--fg-2); font-weight: 400;">Collect sidebar feedback from beta users</span>
+                <span style="flex: 0 0 auto; padding-top: 1px;">
+                  
+                <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-3);">
+                  
+                  31m
+                </span>
+              
+                  
+                  
+                </span>
+              </span>
+              
+            </span>
+          </button>
+          
+        
+          <button class="row " style="width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; text-align: left; white-space: normal; background-image: linear-gradient(to right, rgba(203,72,99,0.09), rgba(203,72,99,0.02) 70%, rgba(203,72,99,0));">
+            <span style="flex: 0 0 22px; display: flex; padding-top: 1px;">
+              
+                <span title="t3code" style="flex: 0 0 auto; width: 22px; height: 22px; display: grid; place-items: center; color: #7248cb; background: rgba(114,72,203,0.14); border: 1px solid rgba(114,72,203,0.4); font-size: 10px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">T3</span>
+              
+              
+            </span>
+            <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px;">
+              <span style="display: flex; align-items: flex-start; gap: 10px;">
+                <span style="flex: 1 1 auto; min-width: 0; font-size: 13.5px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--fg-2); font-weight: 400;">Benchmark cold start time</span>
+                <span style="flex: 0 0 auto; padding-top: 1px;">
+                  
+                <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-3);">
+                  
+                  11h
+                </span>
+              
+                  
+                  
+                </span>
+              </span>
+              
+                <span style="display: flex; align-items: center; gap: 10px; min-height: 16px;">
+                  <span style="flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-3);">
+                    
+                      <span style="flex: 0 1 auto; min-width: 0; display: flex; align-items: center; gap: 5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="flex: 0 0 auto;" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6a9 9 0 0 0-9 9V3"></path><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle></svg><span style="min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">perf/cold-start</span></span>
+                    
+                    
+                    
+                  </span>
+                  
+                  <span class="acct-codex" title="Codex" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; font-size: 9px; font-weight: 700; line-height: 1; color: var(--fg-3); border: 1px solid var(--line-2);"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"></path></svg></span>
+                
+                </span>
+              
+            </span>
+          </button>
+          
+        
+          <button class="row " style="width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; text-align: left; white-space: normal; background-image: linear-gradient(to right, rgba(203,72,99,0.09), rgba(203,72,99,0.02) 70%, rgba(203,72,99,0));">
+            <span style="flex: 0 0 22px; display: flex; padding-top: 1px;">
+              
+                <span title="acme-api" style="flex: 0 0 auto; width: 22px; height: 22px; display: grid; place-items: center; color: #708ca4; background: rgba(112,140,164,0.14); border: 1px solid rgba(112,140,164,0.4); font-size: 10px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">AC</span>
+              
+              
+            </span>
+            <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px;">
+              <span style="display: flex; align-items: flex-start; gap: 10px;">
+                <span style="flex: 1 1 auto; min-width: 0; font-size: 13.5px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--fg-2); font-weight: 400;">Add a token-bucket rate limiter</span>
+                <span style="flex: 0 0 auto; padding-top: 1px;">
+                  
+                <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-3);">
+                  
+                  14h
+                </span>
+              
+                  
+                  
+                </span>
+              </span>
+              
+                <span style="display: flex; align-items: center; gap: 10px; min-height: 16px;">
+                  <span style="flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-3);">
+                    
+                      <span style="flex: 0 1 auto; min-width: 0; display: flex; align-items: center; gap: 5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="flex: 0 0 auto;" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6a9 9 0 0 0-9 9V3"></path><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle></svg><span style="min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">feat/token-bucket</span></span>
+                    
+                    
+                    
+                  </span>
+                  
+                  <span class="acct-personal" title="Claude · Personal" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; font-size: 9px; font-weight: 700; line-height: 1; color: var(--fg-3); border: 1px solid var(--line-2);"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg></span>
+                
+                </span>
+              
+            </span>
+          </button>
+          
+        
+          <button class="row " style="width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; text-align: left; white-space: normal; background-image: linear-gradient(to right, rgba(203,72,99,0.09), rgba(203,72,99,0.02) 70%, rgba(203,72,99,0));">
+            <span style="flex: 0 0 22px; display: flex; padding-top: 1px;">
+              
+                <span title="docs-site" style="flex: 0 0 auto; width: 22px; height: 22px; display: grid; place-items: center; color: #48cba9; background: rgba(72,203,169,0.14); border: 1px solid rgba(72,203,169,0.4); font-size: 10px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">DO</span>
+              
+              
+            </span>
+            <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px;">
+              <span style="display: flex; align-items: flex-start; gap: 10px;">
+                <span style="flex: 1 1 auto; min-width: 0; font-size: 13.5px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--fg-2); font-weight: 400;">Write the v2 config migration guide</span>
+                <span style="flex: 0 0 auto; padding-top: 1px;">
+                  
+                <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-3);">
+                  
+                  2d
+                </span>
+              
+                  
+                  
+                </span>
+              </span>
+              
+                <span style="display: flex; align-items: center; gap: 10px; min-height: 16px;">
+                  <span style="flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-3);">
+                    
+                      <span style="flex: 0 1 auto; min-width: 0; display: flex; align-items: center; gap: 5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="flex: 0 0 auto;" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6a9 9 0 0 0-9 9V3"></path><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle></svg><span style="min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">docs/v2-config-guide</span></span>
+                    
+                    
+                    
+                  </span>
+                  
+                  <span class="acct-work" title="Claude · Work" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; font-size: 9px; font-weight: 700; line-height: 1; color: var(--fg-3); border: 1px solid var(--line-2);"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg></span>
+                
+                </span>
+              
+            </span>
+          </button>
+          
+        
+
+      </div>
+
+      <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: 1px; padding: 6px; border-top: 1px solid var(--line-1);">
+        <button class="ibtn" style="display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 8px; font-size: 12px; font-weight: 600; color: var(--fg-3); text-align: left;">
+          Queued (3)
+          <span style="flex: 1 1 auto; height: 1px; background: var(--line-1);"></span>
+          <span style="font-weight: 600; color: var(--accent); display: flex; align-items: center; gap: 4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path></svg>Launch all</span>
+          <span style="display: grid; transform: rotate(0deg);"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+        </button>
+        
+          
+            <div class="row" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; min-width: 0;">
+              <span style="flex: 0 0 auto; display: flex; gap: 3px;"><span title="t3code" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; color: #7248cb; background: rgba(114,72,203,0.14); border: 1px solid rgba(114,72,203,0.4); font-size: 9px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">T3</span><span title="acme-api" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; color: #708ca4; background: rgba(112,140,164,0.14); border: 1px solid rgba(112,140,164,0.4); font-size: 9px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">AC</span></span>
+              <span style="flex: 1 1 auto; min-width: 0; font-size: 12.5px; color: var(--fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Move both repos to the new lint config</span>
+              <span style="flex: 0 0 auto; font-size: 12px; color: var(--fg-3);">2 runs</span>
+            </div>
+          
+            <div class="row" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; min-width: 0;">
+              <span style="flex: 0 0 auto; display: flex; gap: 3px;"><span title="docs-site" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; color: #48cba9; background: rgba(72,203,169,0.14); border: 1px solid rgba(72,203,169,0.4); font-size: 9px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">DO</span></span>
+              <span style="flex: 1 1 auto; min-width: 0; font-size: 12.5px; color: var(--fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Changelog entry for 0.9 from merged PRs</span>
+              <span style="flex: 0 0 auto; font-size: 12px; color: var(--fg-3);">1 run</span>
+            </div>
+          
+            <div class="row" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; min-width: 0;">
+              <span style="flex: 0 0 auto; display: flex; gap: 3px;"><span title="t3code" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; color: #7248cb; background: rgba(114,72,203,0.14); border: 1px solid rgba(114,72,203,0.4); font-size: 9px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">T3</span></span>
+              <span style="flex: 1 1 auto; min-width: 0; font-size: 12.5px; color: var(--fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Why did cold start regress after 0.8.2?</span>
+              <span style="flex: 0 0 auto; font-size: 12px; color: var(--fg-3);">3 forks</span>
+            </div>
+          
+        
+        <div style="height: 6px;"></div>
+        <button class="ibtn" style="display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 8px; font-size: 12px; font-weight: 600; color: var(--fg-3); text-align: left;">
+          Working
+          <span style="flex: 1 1 auto; height: 1px; background: var(--line-1);"></span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="transform: rotate(0deg);" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+        </button>
+        
+          
+          <button class="row " style="width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; text-align: left; white-space: normal; background-image: none;">
+            <span style="flex: 0 0 22px; display: flex; padding-top: 1px;">
+              
+                <span title="t3code" style="flex: 0 0 auto; width: 22px; height: 22px; display: grid; place-items: center; color: #7248cb; background: rgba(114,72,203,0.14); border: 1px solid rgba(114,72,203,0.4); font-size: 10px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">T3</span>
+              
+              
+            </span>
+            <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px;">
+              <span style="display: flex; align-items: flex-start; gap: 10px;">
+                <span style="flex: 1 1 auto; min-width: 0; font-size: 13.5px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--fg-2); font-weight: 400;">Square off the composer and menus</span>
+                <span style="flex: 0 0 auto; padding-top: 1px;">
+                  
+                  
+                  
+                <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--accent);">
+                  <svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+                  Working 1h 17m
+                </span>
+              
+                </span>
+              </span>
+              
+                <span style="display: flex; align-items: center; gap: 10px; min-height: 16px;">
+                  <span style="flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-3);">
+                    
+                      <span style="flex: 0 1 auto; min-width: 0; display: flex; align-items: center; gap: 5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="flex: 0 0 auto;" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6a9 9 0 0 0-9 9V3"></path><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle></svg><span style="min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">feat/square-chrome</span></span>
+                    
+                    
+                    
+                  <span style="flex: 0 0 auto; display: flex; align-items: center; gap: 4px;">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg>
+                    4
+                  </span>
+                
+                  </span>
+                  
+                  <span class="acct-personal" title="Claude · Personal" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; font-size: 9px; font-weight: 700; line-height: 1; color: var(--fg-3); border: 1px solid var(--line-2);"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg></span>
+                
+                </span>
+              
+            </span>
+          </button>
+          
+        
+
+        <button class="ibtn" style="margin-top: 4px; display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 8px; font-size: 12px; font-weight: 600; color: var(--fg-3); text-align: left;">
+          Settled (128)
+          <span style="flex: 1 1 auto; height: 1px; background: var(--line-1);"></span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="transform: rotate(180deg);" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+        </button>
+        
+      </div>
+
+      <div style="height: 44px; border-top: 1px solid var(--line-1); display: flex; align-items: center; gap: 2px; padding: 0 8px; color: var(--fg-3);">
+        <button class="ibtn" aria-label="Settings" style="width: 32px; height: 32px; display: grid; place-items: center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+        <button class="ibtn" aria-label="Pull requests" style="width: 32px; height: 32px; display: grid; place-items: center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" x2="6" y1="9" y2="21"></line></svg></button>
+        <button class="ibtn" aria-label="Usage" style="width: 32px; height: 32px; display: grid; place-items: center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21v-6"></path><path d="M12 21V3"></path><path d="M19 21V9"></path></svg></button>
+        <span style="flex: 1 1 auto;"></span>
+        <button class="ibtn" aria-label="Update ready to install" style="position: relative; width: 32px; height: 32px; display: grid; place-items: center;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
+          <span aria-hidden="true" style="position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; background: var(--accent);"></span>
+        </button>
+      </div>
+    </aside>
+
+    <main style="flex: 999 1 560px; min-width: 0; min-height: 0; max-height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden;">
+      <div style="height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 20px; border-bottom: 1px solid var(--line-1);">
+        <span style="flex: 0 0 auto; width: 20px; height: 20px; display: grid; place-items: center; color: #7248cb; background: rgba(114,72,203,0.14); border: 1px solid rgba(114,72,203,0.4); font-size: 9px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;">T3</span><span style="font-size: 13px; color: var(--fg-3); white-space: nowrap;">t3code</span>
+        <span style="color: var(--fg-4);">/</span>
+        <span style="color: var(--fg-1); font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Redesign the desktop shell in muted tones</span>
+        <span style="flex: 1 1 auto;"></span>
+      </div>
+
+      
+      <aside aria-label="Thread details" style="position: absolute; top: 56px; right: 20px; width: 300px; background: var(--bg-3); border: 1px solid var(--line-2); box-shadow: 0 12px 36px rgba(0,0,0,0.5); z-index: 5;">
+        <div style="padding: 6px 0;">
+            <div style="display: flex; align-items: center; gap: 12px; height: 34px; padding: 0 12px; color: var(--fg-3);">
+              <span style="display: flex; gap: 4px;"><svg style="display: block; flex: 0 0 auto;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"></rect><line x1="8" x2="16" y1="21" y2="21"></line><line x1="12" x2="12" y1="17" y2="21"></line></svg><svg style="display: block; flex: 0 0 auto;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 19a5 5 0 0 1-5-5v8"></path><path d="M9 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v5"></path><circle cx="13" cy="12" r="2"></circle><circle cx="20" cy="19" r="2"></circle></svg></span>
+              <span style="font-size: 13px; font-weight: 600; color: var(--fg-2);">workstation</span>
+            </div>
+
+            <div style="display: flex; align-items: center; height: 36px;">
+              <button class="menu-item" style="flex: 1 1 auto; min-width: 0; height: 36px; display: flex; align-items: center; gap: 12px; padding: 0 12px; font-size: 13px; font-weight: 600; color: var(--fg-1); text-align: left;">
+                <span style="color: var(--fg-3); display: grid;"><svg style="display: block; flex: 0 0 auto;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></span>
+                <span style="flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Open in Cursor</span>
+                
+              </button>
+              <span style="width: 1px; height: 18px; background: var(--line-2);"></span><button class="menu-item" aria-label="More options" style="width: 36px; height: 36px; display: grid; place-items: center; color: var(--fg-3);"><svg style="display: block; flex: 0 0 auto;" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+            </div>
+
+            <div style="display: flex; align-items: center; height: 36px;">
+              <button class="menu-item" style="flex: 1 1 auto; min-width: 0; height: 36px; display: flex; align-items: center; gap: 12px; padding: 0 12px; font-size: 13px; font-weight: 600; color: var(--fg-1); text-align: left;">
+                <span style="color: var(--fg-3); display: grid;"><svg style="display: block; flex: 0 0 auto;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></span>
+                <span style="flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Add project script</span>
+                
+              </button>
+              
+            </div>
+        </div>
+        <div style="height: 1px; background: var(--line-1);"></div>
+        <div style="padding: 6px 0;">
+
+            <div style="display: flex; align-items: center; height: 36px;">
+              <button class="menu-item" style="flex: 1 1 auto; min-width: 0; height: 36px; display: flex; align-items: center; gap: 12px; padding: 0 12px; font-size: 13px; font-weight: 600; color: var(--fg-1); text-align: left;">
+                <span style="color: var(--fg-3); display: grid;"><svg style="display: block; flex: 0 0 auto;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6a9 9 0 0 0-9 9V3"></path><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle></svg></span>
+                <span style="flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">feat/muted-desktop-theme</span>
+                
+              </button>
+              <span style="width: 1px; height: 18px; background: var(--line-2);"></span><button class="menu-item" aria-label="More options" style="width: 36px; height: 36px; display: grid; place-items: center; color: var(--fg-3);"><svg style="display: block; flex: 0 0 auto;" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+            </div>
+
+            <div style="display: flex; align-items: center; height: 36px;">
+              <button class="menu-item" title="Open PR #412" style="flex: 1 1 auto; min-width: 0; height: 36px; display: flex; align-items: center; gap: 12px; padding: 0 12px; font-size: 13px; font-weight: 600; color: var(--ok); text-align: left;">
+                <span style="color: var(--ok); display: grid;"><svg style="display: block; flex: 0 0 auto;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" x2="6" y1="9" y2="21"></line></svg></span>
+                <span style="flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">#412: Redesign the desktop shell in muted tones</span>
+                
+              </button>
+              
+            </div>
+
+            <div style="display: flex; align-items: center; height: 36px;">
+              <button class="menu-item" title="Nothing to commit" style="flex: 1 1 auto; min-width: 0; height: 36px; display: flex; align-items: center; gap: 12px; padding: 0 12px; font-size: 13px; font-weight: 400; color: var(--fg-3); text-align: left;">
+                <span style="color: var(--fg-3); display: grid;"><svg style="display: block; flex: 0 0 auto;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><line x1="3" x2="9" y1="12" y2="12"></line><line x1="15" x2="21" y1="12" y2="12"></line></svg></span>
+                <span style="flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Commit</span>
+                
+              </button>
+              <span style="width: 1px; height: 18px; background: var(--line-2);"></span><button class="menu-item" aria-label="More options" style="width: 36px; height: 36px; display: grid; place-items: center; color: var(--fg-3);"><svg style="display: block; flex: 0 0 auto;" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+            </div>
+
+            <div style="display: flex; align-items: center; height: 36px;">
+              <button class="menu-item" style="flex: 1 1 auto; min-width: 0; height: 36px; display: flex; align-items: center; gap: 12px; padding: 0 12px; font-size: 13px; font-weight: 600; color: var(--fg-1); text-align: left;">
+                <span style="color: var(--fg-3); display: grid;"><svg style="display: block; flex: 0 0 auto;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M9 10h6"></path><path d="M12 13V7"></path><path d="M9 17h6"></path></svg></span>
+                <span style="flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Changes</span>
+                <span style="flex: 0 0 auto; font-size: 12px; font-weight: 600;"><span style="color: var(--ok);">+212</span> <span style="color: var(--err);">−148</span></span>
+              </button>
+              
+            </div>
+        </div>
+        <div style="height: 1px; background: var(--line-1);"></div>
+        <div style="padding: 6px 0 8px;">
+            <div style="display: flex; align-items: center; height: 32px; padding: 0 4px 0 12px;">
+              <span style="flex: 1 1 auto; font-size: 12px; font-weight: 600; color: var(--fg-3);">Lineage</span>
+              <button class="menu-item" aria-label="Lineage options" style="width: 30px; height: 30px; display: grid; place-items: center; color: var(--fg-2);"><svg style="display: block; flex: 0 0 auto;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
+            </div>
+            <button class="menu-item" style="width: 100%; display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 12px; font-size: 12px; font-weight: 600; color: var(--fg-3); text-align: left;">
+              Previous agents (1)
+              <span style="flex: 1 1 auto; height: 1px; background: var(--line-1);"></span>
+              <svg style="display: block; flex: 0 0 auto;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"></path></svg>
+            </button>
+        </div>
+      </aside>
+      
+
+      <div class="scroll" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 28px 344px 24px 24px;">
+        
+        <div style="max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px;">
+
+          <div style="align-self: flex-end; max-width: 560px; background: var(--bg-4); border: 1px solid var(--line-2); padding: 10px 14px; color: var(--fg-1);">The desktop app still looks like a web page. Restyle the shell to feel calmer: square corners, one grey ramp, muted accents that only mean state. Keep layout, labels and behavior the same.</div>
+
+          <button class="ibtn" style="display: flex; align-items: center; gap: 10px; padding: 6px 0; color: var(--fg-3); font-size: 13px; text-align: left;">
+            <span style="color: #cb8148; display: grid; flex: 0 0 auto;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="flex: 0 0 auto;" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2"></path><circle cx="12" cy="12" r="10"></circle></svg></span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">Mapped every color in the shell to a token; most greys differ by one or two steps and can collapse…</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="flex: 0 0 auto; transform: rotate(-90deg);" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+          </button>
+
+          <p style="margin: 0;">The shell had 41 hard-coded colors and 14 near-identical greys. The first pass is in: tokens first, then the components that read them.</p>
+
+          <section style="display: flex; flex-direction: column; gap: 10px;">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--fg-1);">What changes</h2>
+            <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px;">
+              <li><strong style="color: var(--fg-1); font-weight: 600;">Surfaces:</strong> one six-step grey ramp in <code class="code">theme.css</code> replaces the ad-hoc greys in the sidebar, transcript and composer.</li>
+              <li><strong style="color: var(--fg-1); font-weight: 600;">Color:</strong> chroma cut to about 40%, and color now marks state only: working, done, waiting, failed.</li>
+              <li><strong style="color: var(--fg-1); font-weight: 600;">Shape:</strong> radius 0 on buttons, menus, chips and the composer; 1 px borders do the separating.</li>
+              <li><strong style="color: var(--fg-1); font-weight: 600;">Sidebar:</strong> each project gets a mark (its hue and the first two letters of its name) in place of its name, Queued, Working and Settled sit at the bottom and open upward, and runs a thread starts are listed under it, and rows with no branch drop their empty lines.</li>
+            </ul>
+          </section>
+
+          <section style="background: var(--bg-3); border: 1px solid var(--line-1); padding: 16px 18px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+            <div style="background: var(--ok-bg); border: 1px solid var(--ok-line); padding: 12px 14px; display: flex; flex-direction: column; gap: 6px;">
+              <span style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ok);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Contrast passes</span>
+              <span style="font-size: 13px; color: var(--fg-2);">Every text color clears 4.5:1 on the surface it sits on, including the sidebar and selected rows.</span>
+            </div>
+            <div style="background: var(--warn-bg); border: 1px solid var(--warn-line); padding: 12px 14px; display: flex; flex-direction: column; gap: 6px;">
+              <span style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--warn);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Needs a decision</span>
+              <span style="font-size: 13px; color: var(--fg-2);">Syntax highlighting still uses the old bright palette. Muting it changes how code reads.</span>
+            </div>
+          </section>
+
+          <button class="ibtn" style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--line-1); background: var(--bg-3); font-size: 13px; color: var(--fg-2); text-align: left;">
+            <span style="color: var(--tool-edit);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M9 10h6"></path><path d="M12 13V7"></path><path d="M9 17h6"></path></svg></span>
+            Changed 6 files
+            <span style="margin-left: auto;"><span style="color: var(--ok);">+212</span> <span style="color: var(--err);">−148</span></span>
+          </button>
+
+          <p style="margin: 0;">One call for you: <strong style="color: var(--fg-1); font-weight: 600;">mute syntax colors in this change, or in a follow-up?</strong> I would keep them separate so this review stays about the shell.</p>
+
+          <div style="align-self: flex-end; max-width: 560px; background: var(--bg-4); border: 1px solid var(--line-2); padding: 10px 14px; color: var(--fg-1);">Go, but keep syntax colors as they are for now.</div>
+
+          <div style="display: flex; align-items: center; gap: 10px; margin-top: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);">
+            <svg class="spin" style="display: block; flex: 0 0 auto;" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+            <span>Working</span>
+            <span style="font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--fg-3);">1m 18s</span>
+            <span title="Claude · Work" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-transform: none; letter-spacing: 0; color: #cb8148;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg>Opus 5.5</span>
+            <span style="flex: 1 1 auto; height: 1px; background: var(--line-1);"></span>
+          </div>
+
+          <button class="ibtn appear" style="align-self: flex-start; display: flex; align-items: center; gap: 12px; height: 24px; padding: 0 8px 0 0; font-size: 13px; color: var(--fg-4); text-align: left;">
+            <span style="color: var(--tool-mixed);"><svg style="display: block; flex: 0 0 auto;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 12-9.373 9.373a1 1 0 0 1-3.001-3L12 9"></path><path d="m18 15 4-4"></path><path d="m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172v-.344a2 2 0 0 0-.586-1.414l-1.657-1.657A6 6 0 0 0 12.516 3H9l1.243 1.243A6 6 0 0 1 12 8.485V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5"></path></svg></span>Ran 3 commands, read 1 file, and performed 1 other action<span style="color: var(--fg-4);"><svg style="display: block; flex: 0 0 auto;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span>
+          </button>
+          <p class="appear" style="margin: 0; color: var(--say);">I’m mapping the existing theme tokens so the new greys reuse them.</p>
+
+          <button class="ibtn appear" style="align-self: flex-start; display: flex; align-items: center; gap: 12px; height: 24px; padding: 0 8px 0 0; font-size: 13px; color: var(--fg-4); text-align: left;">
+            <span style="color: var(--tool-read);"><svg style="display: block; flex: 0 0 auto;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg></span>Read 6 files<span style="color: var(--fg-4);"><svg style="display: block; flex: 0 0 auto;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span>
+          </button>
+          <p class="appear" style="margin: 0; color: var(--say);">Next I’m checking which components still hard-code colors. The shell has no token for selection, so I’ll add one and point the sidebar at it.</p>
+
+          <button class="ibtn appear" style="align-self: flex-start; display: flex; align-items: center; gap: 12px; height: 24px; padding: 0 8px 0 0; font-size: 13px; color: var(--fg-4); text-align: left;">
+            <span style="color: var(--tool-cmd);"><svg style="display: block; flex: 0 0 auto;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></span>Ran 2 commands<span style="color: var(--fg-4);"><svg style="display: block; flex: 0 0 auto;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span>
+          </button>
+
+          <button class="ibtn appear" style="align-self: flex-start; display: flex; align-items: center; gap: 12px; height: 24px; padding: 0 8px 0 0; font-size: 13px; color: var(--fg-4); text-align: left;">
+            <span style="color: var(--tool-edit);"><svg style="display: block; flex: 0 0 auto;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M9 10h6"></path><path d="M12 13V7"></path><path d="M9 17h6"></path></svg></span>Edited 4 files<span style="color: var(--fg-4);"><svg style="display: block; flex: 0 0 auto;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span>
+          </button>
+          <p class="appear" style="margin: 0; color: var(--say);">Now swapping the sidebar, composer and panel to the new tokens.</p>
+          <div class="appear" style="display: flex; align-items: flex-start; gap: 12px; font-size: 13px; color: var(--fg-4);">
+            <span style="margin-top: 3px; color: #cb8148;"><svg style="display: block; flex: 0 0 auto;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 18V5"></path><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"></path><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"></path><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"></path><path d="M18 18a4 4 0 0 0 2-7.464"></path><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"></path><path d="M6 18a4 4 0 0 1-2-7.464"></path><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"></path></svg></span>
+            <span>I’m noticing a few hover states that skip the ramp, which would leave lighter greys behind.</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; color: var(--fg-2);">
+            <span style="color: #cb8148; display: grid;"><svg style="display: block; flex: 0 0 auto;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 18V5"></path><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"></path><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"></path><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"></path><path d="M18 18a4 4 0 0 0 2-7.464"></path><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"></path><path d="M6 18a4 4 0 0 1-2-7.464"></path><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"></path></svg></span><span class="shimmer">Thinking</span>
+            <span class="dots" aria-hidden="true" style="display: inline-flex; gap: 3px;"><span style="width: 3px; height: 3px; background: #cb8148;"></span><span style="width: 3px; height: 3px; background: #cb8148; opacity: .6;"></span><span style="width: 3px; height: 3px; background: #cb8148; opacity: .3;"></span></span>
+          </div>
+        </div>
+        
+        
+      </div>
+
+      <div style="padding: 0 344px 18px 24px;">
+        <div style="max-width: 940px; margin: 0 auto; display: flex; flex-direction: column;">
+        
+
+          <div style="background: var(--bg-3); border: 1px solid var(--line-2); box-shadow: 0 8px 30px rgba(0,0,0,0.35); position: relative; z-index: 1;">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 8px 0;">
+
+            <div role="tablist" aria-label="Composer mode" style="display: flex; align-items: center; gap: 4px; height: 28px;">
+              
+                <button role="tab" title="Talk to the agent in this thread" style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 8px; font-size: 12px; font-weight: 600; line-height: 1; color: var(--fg-1); background: var(--bg-5); border: 1px solid var(--line-2);">
+                  <svg style="display: block; flex: 0 0 auto;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"></path></svg>
+                  
+                  
+                  Thread
+                </button>
+              
+                <button role="tab" title="Same prompt, one run per project" style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 8px; font-size: 12px; font-weight: 600; line-height: 1; color: var(--fg-3); background: transparent; border: 1px solid transparent;">
+                  
+                  <svg style="display: block; flex: 0 0 auto;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"></path><path d="M8 3H3v5"></path><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"></path><path d="m15 9 6-6"></path></svg>
+                  
+                  Fan out
+                </button>
+              
+                <button role="tab" title="Same task, one run per agent or account" style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 8px; font-size: 12px; font-weight: 600; line-height: 1; color: var(--fg-3); background: transparent; border: 1px solid transparent;">
+                  
+                  
+                  <svg style="display: block; flex: 0 0 auto;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M12 3v18"></path></svg>
+                  Compare
+                </button>
+              
+              <span style="display: inline-flex; align-items: center; height: 20px; margin-left: 8px; padding: 0 6px; font-size: 11px; line-height: 1; color: var(--fg-3); border: 1px solid var(--line-2); white-space: nowrap;">Shift Tab</span>
+            </div>
+            </div>
+            <div style="padding: 10px 16px 2px;">
+              <textarea aria-label="Message" rows="2" placeholder="Ask anything, @tag files/folders, $use skills, or / for commands"></textarea>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 4px 8px 8px;">
+              <button class="ibtn" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 8px; font-size: 13px; font-weight: 600; color: var(--fg-1);"><span style="display: flex;"><span class="acct-work" title="Claude · Work" aria-hidden="true" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; margin-left: 0px; border: 1px solid var(--line-2); font-size: 10px; font-weight: 700; line-height: 1;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg></span><span class="acct-personal" title="Claude · Personal" aria-hidden="true" style="flex: 0 0 auto; width: 16px; height: 16px; display: grid; place-items: center; margin-left: 2px; border: 1px solid var(--line-2); font-size: 10px; font-weight: 700; line-height: 1;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg></span></span><span title="Round-robin: next turn goes to Work" style="color: #cb8148;">Claude Opus 5.5</span><span style="color: var(--fg-3); display: grid;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span></button>
+              <button title="Round-robin: each run or turn goes to the Claude account with the most headroom" style="display: flex; align-items: center; gap: 5px; height: 24px; padding: 0 7px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--accent); background: var(--accent-bg); border: 1px solid var(--accent-line);">RR · 2</button>
+              <span style="width: 1px; height: 18px; background: var(--line-2); margin: 0 4px;"></span>
+              <button class="ibtn" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 8px; font-size: 13px; font-weight: 600; color: var(--fg-1);"><span style="color: var(--fg-3); display: grid;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 18V5"></path><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"></path><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"></path><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"></path><path d="M18 18a4 4 0 0 0 2-7.464"></path><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"></path><path d="M6 18a4 4 0 0 1-2-7.464"></path><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"></path></svg></span>Medium<span style="color: var(--fg-3); display: grid;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span></button>
+              <span style="width: 1px; height: 18px; background: var(--line-2); margin: 0 4px;"></span>
+              <button class="ibtn" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 8px; font-size: 13px; font-weight: 600; color: var(--fg-1);"><span style="color: var(--fg-3); display: grid;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg></span>Full access<span style="color: var(--fg-3); display: grid;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span></button>
+              <span style="flex: 1 1 auto;"></span>
+              <button class="ibtn" aria-label="Add to queue" title="Add to queue (Ctrl Q)" style="width: 34px; height: 34px; display: grid; place-items: center; color: var(--fg-3);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 5H3"></path><path d="M11 12H3"></path><path d="M16 19H3"></path><path d="M18 9v6"></path><path d="M21 12h-6"></path></svg></button>
+              <button class="ibtn" aria-label="Attach" style="width: 34px; height: 34px; display: grid; place-items: center; color: var(--fg-3);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551"></path></svg></button>
+              <button class="pulse" aria-label="Stop" title="Stop (Esc)" style="width: 36px; height: 34px; display: grid; place-items: center; background: var(--err-bg); border: 1px solid var(--err-line); color: var(--err);"><span style="width: 9px; height: 9px; background: var(--err);"></span></button>
+            </div>
+          </div>
+          <div style="margin: 0 24px; display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 8px; background: var(--bg-2); border: 1px solid var(--line-1); border-top: 0; font-size: 12px; color: var(--fg-3);">
+            <button class="ibtn" style="display: flex; align-items: center; gap: 6px; height: 24px; padding: 0 6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 19a5 5 0 0 1-5-5v8"></path><path d="M9 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v5"></path><circle cx="13" cy="12" r="2"></circle><circle cx="20" cy="19" r="2"></circle></svg>Worktree</button>
+            
+              <span style="width: 1px; height: 14px; background: var(--line-2);"></span>
+              
+              
+                <button disabled="disabled" aria-disabled="true" title="Clean up is available after the agents stop and PR #412 merges" style="display: flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px; color: var(--fg-4); opacity: .55; cursor: not-allowed;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 22-1-4"></path><path d="M19 14a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2h-3a1 1 0 0 1-1-1V4a2 2 0 0 0-4 0v5a1 1 0 0 1-1 1H6a2 2 0 0 0-2 2v1a1 1 0 0 0 1 1"></path><path d="M19 14H5l-1.973 6.767A1 1 0 0 0 4 22h16a1 1 0 0 0 .973-1.233z"></path><path d="m8 22 1-4"></path></svg>Clean up</button>
+              
+            
+            <span style="flex: 1 1 auto;"></span>
+            <button class="ibtn" style="display: flex; align-items: center; gap: 6px; height: 24px; padding: 0 6px; color: var(--ok);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" x2="6" y1="9" y2="21"></line></svg>412</button>
+            <button class="ibtn" style="display: flex; align-items: center; gap: 6px; height: 24px; padding: 0 6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6a9 9 0 0 0-9 9V3"></path><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle></svg>feat/muted-desktop-theme<span style="color: var(--fg-3); display: grid;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span></button>
+          </div>
+        
+        
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+// Replays the working feed like a live run: items pop in at the bottom, the transcript follows, the timer ticks, then it loops.
+(function () {
+  var params = new URLSearchParams(location.search);
+  var scroller = document.querySelector('main .scroll');
+  var items = Array.prototype.slice.call(document.querySelectorAll('main .scroll .appear'));
+  var timer = Array.prototype.slice.call(document.querySelectorAll('main .scroll span')).filter(function (s) { return /^\d+m \d\ds$/.test(s.textContent.trim()); })[0];
+  var sec = 78, step = 0, hold = 0;
+  if (params.has('static') || !items.length) { if (scroller) scroller.scrollTop = scroller.scrollHeight; return; }
+  function show(n) {
+    items.forEach(function (el, i) { el.style.display = i < n ? '' : 'none'; });
+    if (scroller) scroller.scrollTo({ top: scroller.scrollHeight, behavior: n <= 1 ? 'auto' : 'smooth' });
+  }
+  show(1); step = 1;
+  setInterval(function () {
+    sec++;
+    if (timer) timer.textContent = Math.floor(sec / 60) + 'm ' + (sec % 60 < 10 ? '0' : '') + (sec % 60) + 's';
+    if (step < items.length) { if (sec % 2 === 0) { step++; show(step); } }
+    else if (hold < 5) { hold++; }
+    else { step = 1; hold = 0; sec = 60; show(1); }
+  }, 1000);
+})();
+</script>
+
+</body>
+</html>
