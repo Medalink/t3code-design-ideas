@@ -245,7 +245,7 @@ footer .wrap{padding-block:32px 48px;display:flex;flex-direction:column;gap:8px;
         <figure><div class="tag"><i></i>T3 Code today</div><div class="crop" data-src="windows/today.html" data-x="1152" data-y="847" data-w="698" data-h="177" data-nw="2560" data-nh="1035"></div></figure>
         <figure><div class="tag new"><i></i>Redesign</div><div class="crop" data-src="windows/redesign.html?static" data-x="829" data-y="838" data-w="944" data-h="186" data-nw="2560" data-nh="1035"></div></figure>
       </div>
-      <figure style="margin:0;max-width:944px"><div class="tag new"><i></i>After PR #412 merges: Clean up enabled</div><div class="crop" data-src="windows/redesign-merged.html" data-x="829" data-y="990" data-w="944" data-h="45" data-nw="2560" data-nh="1035"></div></figure>
+      <figure style="margin:0"><div class="tag new"><i></i>After PR #412 merges: Clean up enabled</div><div class="crop" data-src="windows/redesign-merged.html" data-x="829" data-y="990" data-w="944" data-h="45" data-nw="2560" data-nh="1035"></div></figure>
     </div>
   </section>
 
@@ -285,11 +285,11 @@ footer .wrap{padding-block:32px 48px;display:flex;flex-direction:column;gap:8px;
           <li>Runs a launch starts appear in the sidebar under the thread that started them.</li>
         </ul>
       </div>
-      <div class="pair" style="grid-template-columns:minmax(0,944px);gap:32px">
+      <div class="pair" style="grid-template-columns:minmax(0,1fr);gap:32px">
         <figure><div class="tag new"><i></i>Fan out</div><div class="crop" data-src="windows/redesign-fanout.html" data-x="829" data-y="636" data-w="944" data-h="382" data-nw="2560" data-nh="1035"></div></figure>
         <figure><div class="tag new"><i></i>Compare</div><div class="crop" data-src="windows/redesign-compare.html" data-x="829" data-y="636" data-w="944" data-h="382" data-nw="2560" data-nh="1035"></div></figure>
       </div>
-      <figure style="margin:0;max-width:480px"><div class="tag new"><i></i>Accounts picker, open</div><div class="crop" data-src="windows/redesign-accounts.html" data-x="838" data-y="755" data-w="346" data-h="262" data-nw="2560" data-nh="1035"></div></figure>
+      <figure style="margin:0;max-width:520px"><div class="tag new"><i></i>Accounts picker, open</div><div class="crop" data-src="windows/redesign-accounts.html" data-x="838" data-y="755" data-w="346" data-h="262" data-nw="2560" data-nh="1035"></div></figure>
     </div>
   </section>
 
@@ -419,14 +419,14 @@ footer .wrap{padding-block:32px 48px;display:flex;flex-direction:column;gap:8px;
     box.appendChild(f);
     fit(box);
   }
-  // Paired crops share one scale (never above 1:1), so text is the same size on both sides.
+  // Paired crops share one scale (up to 1.5x), so text is the same size on both sides; they stack when side by side would shrink them.
   function fitPair(pair) {
     var crops = Array.prototype.slice.call(pair.querySelectorAll('.crop'));
     var W = pair.clientWidth, gap = 20;
     var ws = crops.map(function (c) { return +c.dataset.w; });
     var sum = ws.reduce(function (a, b) { return a + b; }, 0);
     var side = (W - gap * (crops.length - 1)) / sum;
-    var k = side >= 0.6 ? Math.min(1, side) : Math.min(1, W / Math.max.apply(null, ws));
+    var k = side >= 1 ? Math.min(1.5, side) : Math.min(1.5, W / Math.max.apply(null, ws));
     crops.forEach(function (c, i) {
       var px = Math.floor(ws[i] * k) + 'px';
       c.parentNode.style.width = px;
