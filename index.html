@@ -60,6 +60,9 @@ code{font-family:var(--text);color:var(--ink);background:#1a1a1f;border:1px soli
 .tabs button{font:inherit;font-size:var(--step--1);font-weight:600;color:var(--muted);background:none;border:1px solid var(--rule);padding:6px 14px;cursor:pointer}
 .tabs button[aria-pressed="true"]{color:var(--ink);background:#1a1a20;border-color:#3a3a44}
 .tabs .hint{margin-left:auto;align-self:center;font-size:var(--step--1);color:var(--muted)}
+.tabs .open{align-self:center;font-size:var(--step--1);font-weight:600;text-decoration:none;border:1px solid var(--rule);padding:6px 12px;color:#a9b9f0}
+.tabs .open::after{content:" 97"}
+.tabs .open:hover{border-color:var(--accent);color:var(--ink)}
 .crop{position:relative;overflow:hidden;width:100%;max-width:100%;background:#0a0a0a;border:1px solid var(--rule)}
 .crop iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;pointer-events:none;background:#0a0a0a}
 .crop.live iframe{pointer-events:auto}
@@ -144,6 +147,8 @@ footer .wrap{padding-block:32px 48px;display:flex;flex-direction:column;gap:8px;
           <button type="button" id="show-redesign" aria-pressed="true">Redesign, live</button>
           <button type="button" id="show-today" aria-pressed="false">T3 Code today</button>
           <span class="hint">Same threads, same window size, same text scale</span>
+          <a class="open" href="windows/redesign.html" target="_blank" rel="noopener">Open redesign full screen</a>
+          <a class="open" href="windows/today.html" target="_blank" rel="noopener">Open T3 Code today</a>
         </div>
         <figure style="margin:0">
           <div class="crop live" id="hero-crop" data-src="windows/redesign.html" data-x="0" data-y="0" data-w="2560" data-h="1035" data-nw="2560" data-nh="1035"></div>
