@@ -1,4 +1,4 @@
-# T3 Code, Quieter
+# T3 Code Design Ideas
 
 A concept redesign of the T3 Code desktop app, compared side by side with the app as it ships today.
 
