@@ -720,6 +720,7 @@ a{color:#9cc6d2}a:hover{color:#c3dde4}
     </main>
   </div>
 </div>
+<style>.feed-off{display:none!important}</style>
 <script>
 // Replays the working feed like a live run: items pop in at the bottom, the transcript follows, the timer ticks, then it loops.
 (function () {
@@ -730,7 +731,7 @@ a{color:#9cc6d2}a:hover{color:#c3dde4}
   var sec = 78, step = 0, hold = 0;
   if (params.has('static') || !items.length) { if (scroller) scroller.scrollTop = scroller.scrollHeight; return; }
   function show(n) {
-    items.forEach(function (el, i) { el.style.display = i < n ? '' : 'none'; });
+    items.forEach(function (el, i) { el.classList.toggle('feed-off', i >= n); });
     if (scroller) scroller.scrollTo({ top: scroller.scrollHeight, behavior: n <= 1 ? 'auto' : 'smooth' });
   }
   show(1); step = 1;
